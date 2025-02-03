@@ -24,3 +24,25 @@ def conectar_db():
         print(f"Erro ao conectar ao banco de dados: {e}")
         return None
 
+# Função para executar consultas no banco de dados
+def executar_query(query: str, params: tuple = ()) -> tuple:
+    conn = conectar_db()
+    if conn is None:
+        return "Erro ao conectar ao banco de dados.", None
+
+    try:
+        cursor = conn.cursor()
+        cursor.execute(query, params)
+        if query.strip().upper().startswith("SELECT"):
+            result = cursor.fetchall()
+        else:
+            conn.commit()
+            result = None
+        cursor.close()
+        return None, result
+    except Exception as e:
+        print(f"Erro ao executar query: {e}")
+        return f"Erro ao executar query: {e}", None
+    finally:
+        if conn:
+            conn.close()
